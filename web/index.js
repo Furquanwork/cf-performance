@@ -83,7 +83,7 @@ app.use("/*", shopify.ensureInstalledOnShop(), async (_req, res, _next) => {
 app.use(bodyParser.json());
 
 app.put('/modify-theme', async (req, res) => {
-  const { themeId, enableScripts } = req.body;
+  const { themeId, enableScripts, shopDomain } = req.body;
 
   try {
     // Read the theme file
@@ -91,7 +91,7 @@ app.put('/modify-theme', async (req, res) => {
     let themeFileContent = fs.readFileSync(filePath, 'utf-8');
 
     // Define a regular expression to identify third-party scripts
-    const thirdPartyScriptRegex = /<script.*?src=["'](https?:\/\/(?!causalfunnel-app-testing\.com).*?)["'].*?><\/script>/g;
+    const thirdPartyScriptRegex = /<script.*?src=["'](https?:\/\/(?!${shopDomain}\.com).*?)["'].*?><\/script>/g;
 
     // Comment out or uncomment third-party scripts based on enableScripts flag
     themeFileContent = themeFileContent.replace(thirdPartyScriptRegex, (match, scriptUrl) => {
@@ -103,7 +103,7 @@ app.put('/modify-theme', async (req, res) => {
 
     // If enableScripts is true, also create/update a script tag using Shopify API
     if (enableScripts) {
-      const shopifyResponse = await axios.put(`https://causalfunnel-app-testing/admin/api/2023-10/themes/137987326206.json`, {
+      const shopifyResponse = await axios.put(`https://${shopDomain}/admin/api/2023-10/themes/${themeId}.json`, {
         theme: {
           id: themeId,
           role: 'main',
@@ -121,8 +121,8 @@ app.put('/modify-theme', async (req, res) => {
 });
 
 // New endpoint to fetch fully uncommented theme file
-app.get('/fully-uncommented-theme/:themeId', (req, res) => {
-  const { themeId } = req.params;
+app.get('/fully-uncommented-theme/:themeId/:shopDomain', (req, res) => {
+  const { themeId, shopDomain } = req.params;
 
   try {
     // Read the theme file
@@ -130,7 +130,7 @@ app.get('/fully-uncommented-theme/:themeId', (req, res) => {
     let themeFileContent = fs.readFileSync(filePath, 'utf-8');
 
     // Define a regular expression to identify commented third-party scripts
-    const commentedScriptRegex = /\/\*<script.*?src=["'](https?:\/\/(?!causalfunnel-app-testing\.com).*?)["'].*?><\/script>\*\//g;
+    const commentedScriptRegex = /\/\*<script.*?src=["'](https?:\/\/(?!${shopDomain}\.com).*?)["'].*?><\/script>\*\//g;
 
     // Uncomment all commented third-party scripts
     themeFileContent = themeFileContent.replace(commentedScriptRegex, (match, scriptUrl) => {
@@ -144,6 +144,7 @@ app.get('/fully-uncommented-theme/:themeId', (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

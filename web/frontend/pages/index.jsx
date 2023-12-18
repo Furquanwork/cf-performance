@@ -18,57 +18,108 @@ import axios from "axios";
 
 export default function HomePage() {
   const { t } = useTranslation();
-  const [message, setMessage] = useState(null);
 
-  const modifyTheme = async (themeId, enableScripts) => {
-    try {
-      const response = await axios.put('http://localhost:3000/modify-theme', {
-        themeId,
-        enableScripts,
-      });
+  
+  // const [message, setMessage] = useState(null);
+  // const [themeId, setThemeId] = useState(null);
+  // const [shopDomain, setShopDomain] = useState(null);
 
-      if (response.data.success) {
-        setMessage('Theme modified successfully');
-        // Update your React app's state or UI as needed
-      } else {
-        setMessage('Failed to modify theme: ' + response.data.error);
-      }
-    } catch (error) {
-      setMessage('Error modifying theme: ' + error.message);
-    }
-  };
+  // useEffect(() => {
+  //   // Fetch theme information
+  //   const fetchThemeInfo = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         "https://{Api_key}:{Secret_Token}@{Store_Name}.myshopify.com/admin/api/2021-10/themes.json"
+  //       );
 
-  const fetchFullyUncommentedTheme = async () => {
-    try {
-      const themeId = 'yourThemeId'; // Replace with the actual theme ID
-      const response = await axios.get(`http://localhost:3000/fully-uncommented-theme/${themeId}`);
+  //       // Replace with your logic to select the desired theme
+  //       const selectedTheme = response.data.themes.find(
+  //         (theme) => theme.name === "Refresh"
+  //       );
 
-      // Uncomment all third-party scripts and inject into the document
-      const parser = new DOMParser();
-      const htmlDocument = parser.parseFromString(response.data, 'text/html');
+  //       if (selectedTheme) {
+  //         setThemeId(selectedTheme.id);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching theme information:", error.message);
+  //     }
+  //   };
 
-      htmlDocument.querySelectorAll('script').forEach(script => {
-        // Remove comments from the script content
-        const uncommentedScriptContent = script.innerHTML.replace(/\/\*|\*\//g, '');
+  //   // Fetch shop information
+  //   const fetchShopInfo = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         "https://{Api_key}:{Secret_Token}@{Store_Name}.myshopify.com/admin/api/2021-10/shop.json"
+  //       );
 
-        // Create a new script element with uncommented content
-        const newScript = document.createElement('script');
-        newScript.innerHTML = uncommentedScriptContent;
+  //       setShopDomain(response.data.shop.domain);
+  //     } catch (error) {
+  //       console.error("Error fetching shop information:", error.message);
+  //     }
+  //   };
 
-        // Append the new script to the head of the document
-        document.head.appendChild(newScript);
-      });
+  //   // Fetch theme and shop information
+  //   fetchThemeInfo();
+  //   fetchShopInfo();
+  // }, []); // Run once on component mount
 
-      console.log('Fully uncommented theme content:', response.data);
-    } catch (error) {
-      console.error('Error fetching fully uncommented theme:', error.message);
-    }
-  };
 
-  // Load fully uncommented theme after the window has loaded
-  useEffect(() => {
-    window.addEventListener('load', fetchFullyUncommentedTheme);
-  }, []);
+  // const modifyTheme = async (themeId, enableScripts) => {
+  //   try {
+  //     const response = await axios.put(`${API_BASE_URL}/modify-theme`, {
+  //       themeId,
+  //       enableScripts,
+  //       shopDomain,
+  //     });
+
+  //     if (response.data.success) {
+  //       setMessage("Theme modified successfully");
+  //       // Update your React app's state or UI as needed
+  //     } else {
+  //       setMessage("Failed to modify theme: " + response.data.error);
+  //     }
+  //   } catch (error) {
+  //     setMessage("Error modifying theme: " + error.message);
+  //   }
+  // };
+
+  // const fetchFullyUncommentedTheme = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${API_BASE_URL}/fully-uncommented-theme/${themeId}/${shopDomain}`
+  //     );
+
+  //     // Uncomment all third-party scripts and inject into the document
+  //     const parser = new DOMParser();
+  //     const htmlDocument = parser.parseFromString(response.data, "text/html");
+
+  //     htmlDocument.querySelectorAll("script").forEach((script) => {
+  //       // Remove comments from the script content
+  //       const uncommentedScriptContent = script.innerHTML.replace(
+  //         /\/\*|\*\//g,
+  //         ""
+  //       );
+
+  //       // Create a new script element with uncommented content
+  //       const newScript = document.createElement("script");
+  //       newScript.innerHTML = uncommentedScriptContent;
+
+  //       // Append the new script to the head of the document
+  //       document.head.appendChild(newScript);
+  //     });
+
+  //     console.log("Fully uncommented theme content:", response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching fully uncommented theme:", error.message);
+  //   }
+  // };
+
+  // // Load fully uncommented theme after the window has loaded
+  // useEffect(() => {
+  //   if (themeId && shopDomain) {
+  //     window.addEventListener("load", fetchFullyUncommentedTheme);
+  //   }
+  // }, [themeId, shopDomain]);
 
   return (
     <Page narrowWidth>
@@ -108,9 +159,9 @@ export default function HomePage() {
 
                   {/* Example usage: Call modifyTheme with your desired parameters */}
                   <button
-                    onClick={() =>
-                      modifyTheme("137987326206", true)
-                    }
+                    // onClick={() =>
+                    //   modifyTheme("yourThemeId", "yourScriptTagId", true)
+                    // }
                   >
                     Modify Theme
                   </button>
