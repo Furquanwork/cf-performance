@@ -15,6 +15,7 @@ export default {
     callbackUrl: "/api/webhooks",
     callback: async (topic, shop, body, webhookId) => {
       const payload = JSON.parse(body);
+      console.log("shop", shop)
       // Payload has the following shape:
       // {
       //   "shop_id": 954889,

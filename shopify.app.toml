@@ -2,7 +2,7 @@
 
 name = "cf-performance"
 client_id = "a9e3065d484f5889c1864632fe183963"
-application_url = "https://ship-once-toys-house.trycloudflare.com"
+application_url = "https://while-situation-winter-assisted.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -12,9 +12,9 @@ use_legacy_install_flow = true
 
 [auth]
 redirect_urls = [
-  "https://ship-once-toys-house.trycloudflare.com/auth/callback",
-  "https://ship-once-toys-house.trycloudflare.com/auth/shopify/callback",
-  "https://ship-once-toys-house.trycloudflare.com/api/auth/callback"
+  "https://while-situation-winter-assisted.trycloudflare.com/auth/callback",
+  "https://while-situation-winter-assisted.trycloudflare.com/auth/shopify/callback",
+  "https://while-situation-winter-assisted.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

@@ -19,107 +19,29 @@ import axios from "axios";
 export default function HomePage() {
   const { t } = useTranslation();
 
-  
-  // const [message, setMessage] = useState(null);
-  // const [themeId, setThemeId] = useState(null);
-  // const [shopDomain, setShopDomain] = useState(null);
+  const data1= useAppQuery({
+    url: "/api/themes",
+    reactQueryOptions: {
+          onSuccess: (e) => {
+            //for loop l<=e.themes.lentgth if(e.themes.[i].role=="main")
+            
+            modify(e.id)
+          },
+        },
+  });
+  console.log('data is here',data1)
 
-  // useEffect(() => {
-  //   // Fetch theme information
-  //   const fetchThemeInfo = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         "https://{Api_key}:{Secret_Token}@{Store_Name}.myshopify.com/admin/api/2021-10/themes.json"
-  //       );
-
-  //       // Replace with your logic to select the desired theme
-  //       const selectedTheme = response.data.themes.find(
-  //         (theme) => theme.name === "Refresh"
-  //       );
-
-  //       if (selectedTheme) {
-  //         setThemeId(selectedTheme.id);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching theme information:", error.message);
-  //     }
-  //   };
-
-  //   // Fetch shop information
-  //   const fetchShopInfo = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         "https://{Api_key}:{Secret_Token}@{Store_Name}.myshopify.com/admin/api/2021-10/shop.json"
-  //       );
-
-  //       setShopDomain(response.data.shop.domain);
-  //     } catch (error) {
-  //       console.error("Error fetching shop information:", error.message);
-  //     }
-  //   };
-
-  //   // Fetch theme and shop information
-  //   fetchThemeInfo();
-  //   fetchShopInfo();
-  // }, []); // Run once on component mount
-
-
-  // const modifyTheme = async (themeId, enableScripts) => {
-  //   try {
-  //     const response = await axios.put(`${API_BASE_URL}/modify-theme`, {
-  //       themeId,
-  //       enableScripts,
-  //       shopDomain,
-  //     });
-
-  //     if (response.data.success) {
-  //       setMessage("Theme modified successfully");
-  //       // Update your React app's state or UI as needed
-  //     } else {
-  //       setMessage("Failed to modify theme: " + response.data.error);
-  //     }
-  //   } catch (error) {
-  //     setMessage("Error modifying theme: " + error.message);
-  //   }
-  // };
-
-  // const fetchFullyUncommentedTheme = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       `${API_BASE_URL}/fully-uncommented-theme/${themeId}/${shopDomain}`
-  //     );
-
-  //     // Uncomment all third-party scripts and inject into the document
-  //     const parser = new DOMParser();
-  //     const htmlDocument = parser.parseFromString(response.data, "text/html");
-
-  //     htmlDocument.querySelectorAll("script").forEach((script) => {
-  //       // Remove comments from the script content
-  //       const uncommentedScriptContent = script.innerHTML.replace(
-  //         /\/\*|\*\//g,
-  //         ""
-  //       );
-
-  //       // Create a new script element with uncommented content
-  //       const newScript = document.createElement("script");
-  //       newScript.innerHTML = uncommentedScriptContent;
-
-  //       // Append the new script to the head of the document
-  //       document.head.appendChild(newScript);
-  //     });
-
-  //     console.log("Fully uncommented theme content:", response.data);
-  //   } catch (error) {
-  //     console.error("Error fetching fully uncommented theme:", error.message);
-  //   }
-  // };
-
-  // // Load fully uncommented theme after the window has loaded
-  // useEffect(() => {
-  //   if (themeId && shopDomain) {
-  //     window.addEventListener("load", fetchFullyUncommentedTheme);
-  //   }
-  // }, [themeId, shopDomain]);
+  function modify(id){
+    const data1= useAppQuery({
+      url: `/admin/api/2023-04/themes/${id}`,
+      reactQueryOptions: {
+            onSuccess: () => {
+             console.log('theme modified successfully')
+            },
+          },
+    });
+    console.log('data is here',data1)
+  }
 
   return (
     <Page narrowWidth>
@@ -159,9 +81,7 @@ export default function HomePage() {
 
                   {/* Example usage: Call modifyTheme with your desired parameters */}
                   <button
-                    // onClick={() =>
-                    //   modifyTheme("yourThemeId", "yourScriptTagId", true)
-                    // }
+
                   >
                     Modify Theme
                   </button>

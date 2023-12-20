@@ -14,8 +14,6 @@ import axios from 'axios';
 
 dotenv.config();
 
-dotenv.config();
-
 const port = parseInt(
   process.env.BACKEND_port || process.env.port || "3000",
   10
@@ -51,6 +49,7 @@ app.get("/api/products/count", async (_req, res) => {
   const countData = await shopify.api.rest.Product.count({
     session: res.locals.shopify.session,
   });
+  console.log('count data', countData)
   res.status(200).send(countData);
 });
 
@@ -71,47 +70,59 @@ app.get("/api/products/create", async (_req, res) => {
 app.use(shopify.cspHeaders());
 app.use(serveStatic(STATIC_PATH, { index: false }));
 
+
 app.use("/*", shopify.ensureInstalledOnShop(), async (_req, res, _next) => {
+  console.log('shopname', _req.query.shop)
+
   return res
     .status(200)
     .set("Content-Type", "text/html")
     .send(readFileSync(join(STATIC_PATH, "index.html")));
 });
 
-//
-
 app.use(bodyParser.json());
 
-app.put('/modify-theme', async (req, res) => {
-  const { themeId, enableScripts, shopDomain } = req.body;
 
+app.get('/api/themes',   async (_req, res) => {
+  // Assuming session is obtained through the OAuth process
+  console.log('api hit successful;l;y')
   try {
-    // Read the theme file
+    const themes =await shopify.api.rest.Product.count({
+      session: res.locals.shopify.session,
+    });
+    console.log('themes check', themes)
+     
+    const responseData = themes 
+
+    console.log('Response:', responseData);  
+
+    res.status(200).json(responseData);
+  } catch (error) {
+    console.error('here is error of retrive theme',error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.put('/admin/api/2023-04/themes/:id', async (_req, res) => {
+  const shopDomain  =  _req.query.shop;
+  const themeId=_req.params.id;
+  console.log('here is theme detail', _req)
+  try {
+     
     const filePath = path.join(__dirname, 'themes', `${themeId}.js`);
     let themeFileContent = fs.readFileSync(filePath, 'utf-8');
-
-    // Define a regular expression to identify third-party scripts
-    const thirdPartyScriptRegex = /<script.*?src=["'](https?:\/\/(?!${shopDomain}\.com).*?)["'].*?><\/script>/g;
-
-    // Comment out or uncomment third-party scripts based on enableScripts flag
-    themeFileContent = themeFileContent.replace(thirdPartyScriptRegex, (match, scriptUrl) => {
-      return enableScripts ? match : `/* ${match} */`;
-    });
-
-    // Write the modified content back to the theme file
+ 
+    const thirdPartyScriptRegex = new RegExp(`<script.*?src=["'](https?:\/\/(?!${shopDomain}).*?)["'].*?><\/script>`, 'g');
+ 
+    themeFileContent = themeFileContent.replace(thirdPartyScriptRegex, `/* ${thirdPartyScriptRegex} */`)
+ 
     fs.writeFileSync(filePath, themeFileContent, 'utf-8');
 
-    // If enableScripts is true, also create/update a script tag using Shopify API
-    if (enableScripts) {
-      const shopifyResponse = await axios.put(`https://${shopDomain}/admin/api/2023-10/themes/${themeId}.json`, {
-        theme: {
-          id: themeId,
-          role: 'main',
-        },
-      });
+    const iframeScript = `<iframe loading="lazy" src="https://(?!${shopDomain}).*?/path/to/your/script" frameborder="0" allowfullscreen></iframe>`;
+    themeFileContent = themeFileContent.replace(thirdPartyScriptRegex, iframeScript) ;
+        
 
-      console.log('Shopify API Response:', shopifyResponse.data);
-    }
+    fs.writeFileSync(filePath, themeFileContent, 'utf-8');
 
     res.json({ success: true });
   } catch (error) {
@@ -119,32 +130,6 @@ app.put('/modify-theme', async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
-
-// New endpoint to fetch fully uncommented theme file
-app.get('/fully-uncommented-theme/:themeId/:shopDomain', (req, res) => {
-  const { themeId, shopDomain } = req.params;
-
-  try {
-    // Read the theme file
-    const filePath = path.join(__dirname, 'themes', `${themeId}.js`);
-    let themeFileContent = fs.readFileSync(filePath, 'utf-8');
-
-    // Define a regular expression to identify commented third-party scripts
-    const commentedScriptRegex = /\/\*<script.*?src=["'](https?:\/\/(?!${shopDomain}\.com).*?)["'].*?><\/script>\*\//g;
-
-    // Uncomment all commented third-party scripts
-    themeFileContent = themeFileContent.replace(commentedScriptRegex, (match, scriptUrl) => {
-      return `<script src="${scriptUrl}"></script>`;
-    });
-
-    // Respond with the fully uncommented theme content
-    res.send(themeFileContent);
-  } catch (error) {
-    console.error('Error reading theme file:', error.message);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
