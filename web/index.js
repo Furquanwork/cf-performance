@@ -138,30 +138,33 @@ app.get('/api/themes',   async (_req, res) => {
 // });
 
 // app.put('/admin/api/2023-04/themes/:id', async (_req, res) => {
-//   console.log('here is theme detail', _req)
-//   const shopDomain  =  _req.query.shop;
-//   const themeId=_req.params.id;
+//   const shopDomain = _req.query.shop;
+//   const themeId = _req.params.id;
+
 //   try {
-     
-//     const filePath = path.join(__dirname, 'themes', `${themeId}.js`);
-//     let themeFileContent = fs.readFileSync(filePath, 'utf-8');
- 
-//     const thirdPartyScriptRegex = new RegExp(`<script.*?src=["'](https?:\/\/(?!${shopDomain}).*?)["'].*?><\/script>`, 'g');
- 
-//     themeFileContent = themeFileContent.replace(thirdPartyScriptRegex, `/* ${thirdPartyScriptRegex} */`)
- 
-//     fs.writeFileSync(filePath, themeFileContent, 'utf-8');
+//       const filePath = path.join(__dirname, 'themes', `${themeId}.liquid`);
+//       let themeFileContent = await fs.readFile(filePath, 'utf-8');
 
-//     const iframeScript = `<iframe loading="lazy" src="https://(?!${shopDomain}).*?/path/to/your/script" frameborder="0" allowfullscreen></iframe>`;
-//     themeFileContent = themeFileContent.replace(thirdPartyScriptRegex, iframeScript) ;
-        
+//       // Comment out third-party scripts and extract src
+//       const thirdPartyScriptRegex = /<script.*?src=["'](https?:\/\/(?!${shopDomain}).*?)["'].*?><\/script>/g;
+//       let match;
+//       let iframes = '';
 
-//     fs.writeFileSync(filePath, themeFileContent, 'utf-8');
+//       while ((match = thirdPartyScriptRegex.exec(themeFileContent)) !== null) {
+//           themeFileContent = themeFileContent.replace(match[0], `/* ${match[0]} */`);
+//           iframes += `<iframe src="${match[1]}" loading="lazy" frameborder="0" allowfullscreen></iframe>\n`;
+//       }
 
-//     res.json({ success: true });
+//       // Insert iframes at the end of the body or in the footer
+//       const iframeInsertionPointRegex = /<\/body>/;
+//       themeFileContent = themeFileContent.replace(iframeInsertionPointRegex, `${iframes}$&`);
+
+//       await fs.writeFile(filePath, themeFileContent, 'utf-8');
+
+//       res.json({ success: true });
 //   } catch (error) {
-//     console.error('Error modifying theme:', error.message);
-//     res.status(500).json({ success: false, error: error.message });
+//       console.error('Error modifying theme:', error.message);
+//       res.status(500).json({ success: false, error: error.message });
 //   }
 // });
 
