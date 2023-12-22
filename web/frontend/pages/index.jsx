@@ -14,34 +14,38 @@ import { useTranslation, Trans } from "react-i18next";
 import { trophyImage } from "../assets";
 
 import { ProductsCard } from "../components";
-import axios from "axios";
+import { useAppQuery } from "../hooks";
+
 
 export default function HomePage() {
   const { t } = useTranslation();
 
-  const data1= useAppQuery({
+  const {data1}= useAppQuery({
     url: "/api/themes",
     reactQueryOptions: {
           onSuccess: (e) => {
-            //for loop l<=e.themes.lentgth if(e.themes.[i].role=="main")
-            
-            modify(e.id)
+            console.log("Api hit successfully")
+            console.log("response",e)
+            for (let i = 0; i < e.length; i++) {
+              if (e.data[i].role === "main") {
+                console.log("id->", e.data[i].id); 
+              }
+            }
           },
         },
   });
-  console.log('data is here',data1)
 
-  function modify(id){
-    const data1= useAppQuery({
-      url: `/admin/api/2023-04/themes/${id}`,
-      reactQueryOptions: {
-            onSuccess: () => {
-             console.log('theme modified successfully')
-            },
-          },
-    });
-    console.log('data is here',data1)
-  }
+  // function modify(id){
+  //   const data1= useAppQuery({
+  //     url: `/admin/api/2023-04/themes/${id}`,
+  //     reactQueryOptions: {
+  //           onSuccess: () => {
+  //            console.log('theme modified successfully')
+  //           },
+  //         },
+  //   });
+  //   console.log('modify',data1)
+  // }
 
   return (
     <Page narrowWidth>
