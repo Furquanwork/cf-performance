@@ -20,6 +20,9 @@ import { useAppQuery } from "../hooks";
 export default function HomePage() {
   const { t } = useTranslation();
 
+
+
+
   const {data1}= useAppQuery({
     url: "/api/themes",
     reactQueryOptions: {
@@ -35,6 +38,7 @@ export default function HomePage() {
           },
         },
   });
+
   const {data2}= useAppQuery({
     methid: "GET",
     url: "/api/themes/137987326206/assets",
@@ -48,14 +52,26 @@ export default function HomePage() {
 
   const {data3}= useAppQuery({
     methid: "GET",
-    url: "/api/themes/137987326206/assets.json?asset[key]=assets/theme.js",
+    url: "/api/theme/137987326206/assets",
     reactQueryOptions: {
           onSuccess: (e) => {
-            console.log("Api2 hit successfully")
-            console.log("response",e)
+            console.log("Api3 hit successfully")
+            console.log("response file",e)
           },
         },
   });
+
+  const {data4}= useAppQuery({
+    methid: "GET",
+    url: "/api/the/137987326206/assets",
+    reactQueryOptions: {
+          onSuccess: (e) => {
+            console.log("modified successfully")
+            console.log("response modified file",e)
+          },
+        },
+  });
+
 
   // function modify(id){
   //   console.log("modify called")

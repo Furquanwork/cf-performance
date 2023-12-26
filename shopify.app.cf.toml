@@ -2,7 +2,7 @@
 
 name = "cf-pf"
 client_id = "f667211284fc0a2a919282a569390366"
-application_url = "https://identity-detect-robin-ghana.trycloudflare.com"
+application_url = "https://months-consumers-smoke-supplies.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products, read_themes, write_themes"
 
 [auth]
 redirect_urls = [
-  "https://identity-detect-robin-ghana.trycloudflare.com/auth/callback",
-  "https://identity-detect-robin-ghana.trycloudflare.com/auth/shopify/callback",
-  "https://identity-detect-robin-ghana.trycloudflare.com/api/auth/callback"
+  "https://months-consumers-smoke-supplies.trycloudflare.com/auth/callback",
+  "https://months-consumers-smoke-supplies.trycloudflare.com/auth/shopify/callback",
+  "https://months-consumers-smoke-supplies.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
