@@ -26,25 +26,48 @@ export default function HomePage() {
           onSuccess: (e) => {
             console.log("Api hit successfully")
             console.log("response",e)
-            for (let i = 0; i < e.length; i++) {
+            for (let i = 0; i < e.data.length; i++) {
               if (e.data[i].role === "main") {
                 console.log("id->", e.data[i].id); 
+                modify(e.data[i].id);
               }
             }
           },
         },
   });
+  const {data2}= useAppQuery({
+    methid: "GET",
+    url: "/api/themes/137987326206/assets",
+    reactQueryOptions: {
+          onSuccess: (e) => {
+            console.log("Api2 hit successfully")
+            console.log("response",e)
+          },
+        },
+  });
+
+  const {data3}= useAppQuery({
+    methid: "GET",
+    url: "/api/themes/137987326206/assets.json?asset[key]=assets/theme.js",
+    reactQueryOptions: {
+          onSuccess: (e) => {
+            console.log("Api2 hit successfully")
+            console.log("response",e)
+          },
+        },
+  });
 
   // function modify(id){
-  //   const data1= useAppQuery({
-  //     url: `/admin/api/2023-04/themes/${id}`,
+  //   console.log("modify called")
+  //   const data= useAppQuery({
+  //     url: `/api/themes/137987326206}`,
   //     reactQueryOptions: {
   //           onSuccess: () => {
   //            console.log('theme modified successfully')
   //           },
   //         },
   //   });
-  //   console.log('modify',data1)
+  //   console.log('modify',data)
   // }
 
   return (

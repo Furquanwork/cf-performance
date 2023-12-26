@@ -9,6 +9,8 @@ import fs from 'fs';
 import path from 'path';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+import axios from 'axios';
+
 
 dotenv.config();
 
@@ -40,18 +42,59 @@ app.post(
 app.use("/api/*", shopify.validateAuthenticatedSession());
 
 app.use(express.json());
+
+
+app.get('/api/themes/137987326206/assets.json?asset[key]=assets/theme.js',   async (_req, res) => {
+  try {
+    const assetsData =await shopify.api.rest.Asset.all({
+      session: res.locals.shopify.session,
+      theme_id: 137987326206,
+      asset: {"key": "assets/theme.js"},
+    });
+    // console.log('themes check', themes)
+     
+    const responseData = assetsData
+
+    console.log('ResponseAssets:', responseData);  
+
+    res.status(200).json(responseData);
+  } catch (error) {
+    console.error('here is error of retrive theme file',error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/api/themes/137987326206/assets',   async (_req, res) => {
+  try {
+    const assetsData =await shopify.api.rest.Asset.all({
+      session: res.locals.shopify.session,
+      theme_id: 137987326206,
+    });
+    // console.log('themes check', themes)
+     
+    const responseData = assetsData
+
+    console.log('ResponseAssets:', responseData);  
+
+    res.status(200).json(responseData);
+  } catch (error) {
+    console.error('here is error of retrive theme file',error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.get('/api/themes',   async (_req, res) => {
-  console.log('api hit successful;l;y')
+  console.log('Retrive Theme')
   try {
     const themes =await shopify.api.rest.Theme.all({
       session: res.locals.shopify.session,
       // id: 137987326206,
     });
-    console.log('themes check', themes)
+    // console.log('themes check', themes)
      
     const responseData = themes 
 
-    console.log('Response:', responseData);  
+    // console.log('Response of Theme:', responseData);  
 
     res.status(200).json(responseData);
   } catch (error) {
@@ -86,18 +129,58 @@ app.use("/*", shopify.ensureInstalledOnShop(), async (_req, res, _next) => {
 app.use(bodyParser.json());
 
 
-app.get('/api/themes',   async (_req, res) => {
-  console.log('retrive all the theme')
-  try {
-    const themes =await shopify.api.rest.Theme.all({
-      session: res.locals.shopify.session,
-      // id: 137987326206,
-    });
-    console.log('themes check', themes)
+// app.get('/api/themes',   async (_req, res) => {
+//   console.log('retrive all the theme')
+//   try {
+//     const themes =await shopify.api.rest.Theme.all({
+//       session: res.locals.shopify.session,
+//       // id: 137987326206,
+//     });
+//     // console.log('themes check', themes)
      
-    const responseData = themes 
+//     const responseData = themes 
 
-    console.log('Response:', responseData);  
+//     // console.log('Response:', responseData);  
+
+//     res.status(200).json(responseData);
+//   } catch (error) {
+//     console.error('here is error of retrive theme',error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
+ 
+
+// app.put('/api/themes/:id/assets', async (_req, res) => {
+//   const themeId = _req.params.id;
+//   const shopDomain = _req.query.shop;
+//    console.log("theme Id and ShopDomain", themeId, shopDomain)
+//   try {
+//     // // Read and modify the theme file
+//     // const filePath = path.join(__dirname, 'themes', `${themeId}.liquid`);
+//     // let themeFileContent = await fs.readFile(filePath, 'utf-8');
+//     // const thirdPartyScriptRegex = new RegExp(`<script.*?src=["'](https?:\/\/(?!${shopDomain}).*?)["'].*?><\/script>`, 'g');
+//     // themeFileContent = themeFileContent.replace(thirdPartyScriptRegex, `/* $& */`);
+//     // await fs.writeFile(filePath, themeFileContent, 'utf-8');
+
+//     // Update the theme using Shopify API
+//      console.log("Inside Try")
+    
+//   } catch (error) {
+//     console.error('Error:', error.message);
+//     res.status(500).send('Error occurred');
+//   }
+// });
+
+app.get('/api/themes/137987326206/assets',   async (_req, res) => {
+  try {
+    const assetsData =await shopify.api.rest.Asset.all({
+      session: res.locals.shopify.session,
+    });
+    // console.log('themes check', themes)
+     
+    const responseData = assetsData
+
+    console.log('ResponseAssets:', responseData);  
 
     res.status(200).json(responseData);
   } catch (error) {
@@ -106,67 +189,48 @@ app.get('/api/themes',   async (_req, res) => {
   }
 });
 
-// const axios = require('axios');
+// app.put('/api/themes/:id/assets', async (_req, res) => {
+//   const themeId = _req.params.id;
+//   const shopDomain = _req.query.shop;
 
-// const shopifyApiEndpoint = 'https://your-development-store.myshopify.com/admin/api/2023-10/themes/137987326206.json';
-// const accessToken = '{access_token}'; // Replace with your actual access token
-
-// app.get('/api/themes/137987326206', async (_req, res) => {
-//   console.log('API hit successful');
 //   try {
-//     const response = await axios.get(shopifyApiEndpoint, {
-//       headers: {
-//         'X-Shopify-Access-Token': accessToken,
-//       },
+//     const themeFileResponse = await axios({
+//       method: 'GET',
+//       url: `/api/themes/${themeId}/assets.json?asset[key]=layout/theme.liquid`,
+//       // headers: {
+//       //   // Include necessary headers for authentication
+//       // }
 //     });
 
-//     const themes = response.data.theme;
-//     console.log('Themes:', themes);
+//     let themeFileContent = themeFileResponse.data.asset.value;
 
-//     const responseData = {
-//       themeId: themes.id,
-//       name: themes.name,
-//       // Add other properties you want to include in the response
-//     };
+//     // Regular expression to comment out third-party scripts
+//     const thirdPartyScriptRegex = new RegExp(`<script.*?src=["'](https?:\/\/(?!${shopDomain}).*?)["'].*?><\/script>`, 'g');
+//     themeFileContent = themeFileContent.replace(thirdPartyScriptRegex, `/* $& */`);
 
-//     console.log('Response:', responseData);
-//     res.status(200).json(responseData);
+//     await axios({
+//       method: 'PUT',
+//       url: `/api/themes/${themeId}/assets.json`,
+//       data: {
+//         asset: {
+//           key: 'layout/theme.liquid',
+//           value: themeFileContent
+//         }
+//       },
+//       // headers: {
+//       //   // Include necessary headers for authentication
+//       // }
+//     });
+
+//     res.status(200).send('Theme updated successfully');
 //   } catch (error) {
-//     console.error('Error retrieving theme:', error.response ? error.response.data : error.message);
-//     res.status(error.response ? error.response.status : 500).json({ error: 'Internal Server Error' });
+//     console.error('Error:', error.message);
+//     res.status(500).send('Error occurred');
 //   }
 // });
 
-// app.put('/admin/api/2023-04/themes/:id', async (_req, res) => {
-//   const shopDomain = _req.query.shop;
-//   const themeId = _req.params.id;
 
-//   try {
-//       const filePath = path.join(__dirname, 'themes', `${themeId}.liquid`);
-//       let themeFileContent = await fs.readFile(filePath, 'utf-8');
 
-//       // Comment out third-party scripts and extract src
-//       const thirdPartyScriptRegex = /<script.*?src=["'](https?:\/\/(?!${shopDomain}).*?)["'].*?><\/script>/g;
-//       let match;
-//       let iframes = '';
-
-//       while ((match = thirdPartyScriptRegex.exec(themeFileContent)) !== null) {
-//           themeFileContent = themeFileContent.replace(match[0], `/* ${match[0]} */`);
-//           iframes += `<iframe src="${match[1]}" loading="lazy" frameborder="0" allowfullscreen></iframe>\n`;
-//       }
-
-//       // Insert iframes at the end of the body or in the footer
-//       const iframeInsertionPointRegex = /<\/body>/;
-//       themeFileContent = themeFileContent.replace(iframeInsertionPointRegex, `${iframes}$&`);
-
-//       await fs.writeFile(filePath, themeFileContent, 'utf-8');
-
-//       res.json({ success: true });
-//   } catch (error) {
-//       console.error('Error modifying theme:', error.message);
-//       res.status(500).json({ success: false, error: error.message });
-//   }
-// });
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
